@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useRef, useCallback, KeyboardEvent } from "react";
-import { Send, LayoutTemplate } from "lucide-react";
+import { Send, LayoutTemplate, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ReplyQuote } from "./reply-quote";
+import { toast } from "sonner";
 
 interface ReplyDraft {
   /** Internal UUID of the message being replied to — sent back through onSend. */
@@ -32,6 +33,7 @@ export function MessageComposer({
 }: MessageComposerProps) {
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
+  const [draftingReply, setDraftingReply] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const adjustHeight = useCallback(() => {
@@ -75,6 +77,36 @@ export function MessageComposer({
     },
     [adjustHeight]
   );
+
+  const handleDraftReply = useCallback(async () => {
+    if (draftingReply || sessionExpired) return;
+    setDraftingReply(true);
+    try {
+      const res = await fetch("/api/ai/draft-reply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ conversation_id: conversationId }),
+      });
+      const payload = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast.error(`Draft failed: ${payload?.error ?? `HTTP ${res.status}`}`);
+        return;
+      }
+      if (payload.draft) {
+        setText(payload.draft);
+        requestAnimationFrame(() => {
+          adjustHeight();
+          textareaRef.current?.focus();
+        });
+      }
+    } catch (err) {
+      toast.error(
+        `Draft failed: ${err instanceof Error ? err.message : "network error"}`
+      );
+    } finally {
+      setDraftingReply(false);
+    }
+  }, [draftingReply, sessionExpired, conversationId, adjustHeight]);
 
   return (
     <div className="border-t border-slate-800 bg-slate-900 p-3">
@@ -132,6 +164,17 @@ export function MessageComposer({
             sessionExpired && "cursor-not-allowed opacity-50"
           )}
         />
+
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-9 w-9 shrink-0 p-0 text-slate-400 hover:text-violet-400 disabled:opacity-40"
+          disabled={draftingReply || sessionExpired}
+          onClick={handleDraftReply}
+          title="Draft reply with AI"
+        >
+          <Sparkles className={cn("h-4 w-4", draftingReply && "animate-pulse")} />
+        </Button>
 
         <Button
           size="sm"
