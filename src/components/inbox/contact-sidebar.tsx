@@ -14,22 +14,34 @@ import {
   DollarSign,
   StickyNote,
   Plus,
+  Sparkles,
 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { format } from "date-fns";
 
-interface ContactSidebarProps {
-  contact: Contact | null;
+interface LeadScore {
+  score: 'hot' | 'warm' | 'cold';
+  reason: string;
 }
 
-export function ContactSidebar({ contact }: ContactSidebarProps) {
+interface ContactSidebarProps {
+  contact: Contact | null;
+  conversationId?: string;
+}
+
+export function ContactSidebar({ contact, conversationId }: ContactSidebarProps) {
   const [copied, setCopied] = useState(false);
   const [deals, setDeals] = useState<Deal[]>([]);
   const [notes, setNotes] = useState<ContactNote[]>([]);
   const [tags, setTags] = useState<(Tag & { contact_tag_id: string })[]>([]);
   const [newNote, setNewNote] = useState("");
   const [addingNote, setAddingNote] = useState(false);
+  const [leadScore, setLeadScore] = useState<LeadScore | null>(null);
+  const [scoringLead, setScoringLead] = useState(false);
+  const [summary, setSummary] = useState<string | null>(null);
+  const [summarizing, setSummarizing] = useState(false);
 
   const fetchContactData = useCallback(async () => {
     if (!contact) return;
@@ -72,6 +84,8 @@ export function ContactSidebar({ contact }: ContactSidebarProps) {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchContactData();
+    setLeadScore(null);
+    setSummary(null);
   }, [fetchContactData]);
 
   const handleCopyPhone = useCallback(async () => {
@@ -83,6 +97,50 @@ export function ContactSidebar({ contact }: ContactSidebarProps) {
     // React Compiler's inference agrees with the manual dep list —
     // fixes the `preserve-manual-memoization` lint error.
   }, [contact]);
+
+  const handleSummarize = useCallback(async () => {
+    if (summarizing || !conversationId) return;
+    setSummarizing(true);
+    try {
+      const res = await fetch('/api/ai/summarize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ conversation_id: conversationId }),
+      });
+      const payload = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast.error(`Summary failed: ${payload?.error ?? `HTTP ${res.status}`}`);
+        return;
+      }
+      setSummary(payload.summary ?? null);
+    } catch (err) {
+      toast.error(`Summary failed: ${err instanceof Error ? err.message : 'network error'}`);
+    } finally {
+      setSummarizing(false);
+    }
+  }, [summarizing, conversationId]);
+
+  const handleScoreLead = useCallback(async () => {
+    if (scoringLead || !conversationId) return;
+    setScoringLead(true);
+    try {
+      const res = await fetch('/api/ai/score-lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ conversation_id: conversationId }),
+      });
+      const payload = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast.error(`Scoring failed: ${payload?.error ?? `HTTP ${res.status}`}`);
+        return;
+      }
+      setLeadScore(payload as LeadScore);
+    } catch (err) {
+      toast.error(`Scoring failed: ${err instanceof Error ? err.message : 'network error'}`);
+    } finally {
+      setScoringLead(false);
+    }
+  }, [scoringLead, conversationId]);
 
   const handleAddNote = useCallback(async () => {
     if (!contact || !newNote.trim()) return;
@@ -146,6 +204,46 @@ export function ContactSidebar({ contact }: ContactSidebarProps) {
               <p className="text-xs text-slate-400">{contact.company}</p>
             )}
           </div>
+
+          {/* AI Lead Score */}
+          {conversationId && (
+            <div className="mt-3 flex flex-col items-center gap-1">
+              <div className="flex items-center gap-2">
+                {leadScore && (
+                  <span
+                    className={cn(
+                      "rounded-full px-3 py-1 text-xs font-semibold",
+                      leadScore.score === "hot" && "bg-red-500/20 text-red-400",
+                      leadScore.score === "warm" && "bg-amber-500/20 text-amber-400",
+                      leadScore.score === "cold" && "bg-slate-500/20 text-slate-400",
+                    )}
+                  >
+                    {leadScore.score === "hot"
+                      ? "🔥"
+                      : leadScore.score === "warm"
+                        ? "☀️"
+                        : "❄️"}{" "}
+                    {leadScore.score.toUpperCase()}
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={handleScoreLead}
+                  disabled={scoringLead}
+                  className="flex items-center gap-1 rounded-full px-2 py-1 text-[10px] text-slate-500 transition-colors hover:text-violet-400 disabled:opacity-40"
+                  title="Score this lead with AI"
+                >
+                  <Sparkles className={cn("h-3 w-3", scoringLead && "animate-pulse")} />
+                  {leadScore ? "Refresh" : "Score lead"}
+                </button>
+              </div>
+              {leadScore && (
+                <p className="px-4 text-center text-[10px] text-slate-500">
+                  {leadScore.reason}
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Phone */}
           <div className="mt-4 space-y-2">
@@ -242,6 +340,39 @@ export function ContactSidebar({ contact }: ContactSidebarProps) {
               )}
             </div>
           </div>
+
+          {/* Divider */}
+          <div className="my-4 border-t border-slate-800" />
+
+          {/* AI Conversation Summary */}
+          {conversationId && (
+            <div>
+              <div className="flex items-center justify-between px-1">
+                <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-slate-500">
+                  <Sparkles className="h-3 w-3" />
+                  Summary
+                </div>
+                <button
+                  type="button"
+                  onClick={handleSummarize}
+                  disabled={summarizing}
+                  className="flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] text-slate-500 transition-colors hover:text-violet-400 disabled:opacity-40"
+                >
+                  <Sparkles className={cn("h-3 w-3", summarizing && "animate-pulse")} />
+                  {summary ? "Refresh" : "Summarize"}
+                </button>
+              </div>
+              {summary ? (
+                <p className="mt-2 rounded-lg bg-slate-800 px-3 py-2 text-xs leading-relaxed text-slate-300">
+                  {summary}
+                </p>
+              ) : (
+                <p className="mt-1 px-1 text-xs text-slate-600">
+                  {summarizing ? "Generating summary…" : "No summary yet"}
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Divider */}
           <div className="my-4 border-t border-slate-800" />

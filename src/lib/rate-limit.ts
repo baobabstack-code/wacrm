@@ -127,6 +127,10 @@ export const RATE_LIMITS = {
   react: { limit: 120, windowMs: 60_000 },
   /** AI draft-reply. One Gemini call per click. 20/min is generous for a human. */
   draftReply: { limit: 20, windowMs: 60_000 },
+  /** AI lead scoring. One Gemini call per click. 10/min per user. */
+  scoreLead: { limit: 10, windowMs: 60_000 },
+  /** AI conversation summary. One Gemini call per click. 10/min per user. */
+  summarize: { limit: 10, windowMs: 60_000 },
 } as const;
 
 /** Test-only helper. Clears the in-memory state so unit tests don't
