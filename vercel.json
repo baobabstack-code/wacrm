@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "src/app/api/ai/**": {
+      "maxDuration": 60
+    },
+    "src/app/api/whatsapp/webhook/**": {
+      "maxDuration": 30
+    }
+  }
+}
