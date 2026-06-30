@@ -293,7 +293,7 @@ export default function LandingPage() {
 
       <footer className="lp-footer">
         <div className="lp-footer-inner">
-          <p className="lp-footer-copy">© 2026 WaCRM · All rights reserved</p>
+          <p className="lp-footer-copy">© 2026 Vertex Software Labs t/a Baobab Stack · All rights reserved</p>
           <div className="lp-footer-links">
             <a href="#features" className="lp-footer-link">Features</a>
             <a href="#pricing" className="lp-footer-link">Pricing</a>
