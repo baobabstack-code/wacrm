@@ -32,7 +32,7 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname === '/forgot-password'
   )) {
     const url = request.nextUrl.clone()
-    url.pathname = '/'
+    url.pathname = '/dashboard'
     return NextResponse.redirect(url)
   }
 
