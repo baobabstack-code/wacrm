@@ -1,11 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 import "./landing.css";
 
 export default function LandingPage() {
   const navRef = useRef<HTMLElement>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getSession().then(({ data }) => {
+      setIsLoggedIn(!!data.session);
+    });
+  }, []);
 
   useEffect(() => {
     const nav = navRef.current;
@@ -55,13 +64,17 @@ export default function LandingPage() {
           <div className="lp-nav-links">
             <a href="#features" className="lp-nav-link">Features</a>
             <a href="#how" className="lp-nav-link">How it works</a>
-            <a href="#self-host" className="lp-nav-link">Self-host</a>
+            <a href="#pricing" className="lp-nav-link">Pricing</a>
           </div>
           <div className="lp-nav-cta">
-            <Link href="/login" className="lp-btn lp-btn-ghost">Sign in</Link>
-            <a href="https://github.com/ArnasDon/wacrm" className="lp-btn lp-btn-primary">
-              <GithubIcon /> GitHub
-            </a>
+            {isLoggedIn ? (
+              <Link href="/dashboard" className="lp-btn lp-btn-primary">Go to dashboard</Link>
+            ) : (
+              <>
+                <Link href="/login" className="lp-btn lp-btn-ghost">Sign in</Link>
+                <Link href="/signup" className="lp-btn lp-btn-primary">Start free trial</Link>
+              </>
+            )}
           </div>
         </div>
       </nav>
@@ -73,24 +86,28 @@ export default function LandingPage() {
 
           <div className="lp-badge">
             <span className="lp-badge-dot" aria-hidden="true" />
-            Open source · MIT license · v0.2.2
+            Now in early access · 14-day free trial · No credit card required
           </div>
 
           <h1 className="lp-h1">
-            The WhatsApp CRM<br />
-            you <em className="lp-h1-em">actually own</em>
+            The WhatsApp CRM built for<br />
+            <em className="lp-h1-em">teams that close deals</em>
           </h1>
 
           <p className="lp-hero-sub">
-            A complete, self-hostable CRM built for teams running WhatsApp Business.
-            Shared inbox, pipelines, broadcasts, automations — fork it, brand it, ship it.
+            Turn every WhatsApp conversation into a managed sales opportunity.
+            Shared inbox, pipelines, broadcasts, and automations — all in one place, ready in minutes.
           </p>
 
           <div className="lp-hero-actions">
-            <a href="https://github.com/ArnasDon/wacrm" className="lp-btn lp-btn-primary lp-btn-lg">
-              <GithubIcon /> Clone the repo
-            </a>
-            <Link href="/signup" className="lp-btn lp-btn-outline lp-btn-lg">Try the demo</Link>
+            {isLoggedIn ? (
+              <Link href="/dashboard" className="lp-btn lp-btn-primary lp-btn-lg">Go to dashboard</Link>
+            ) : (
+              <>
+                <Link href="/signup" className="lp-btn lp-btn-primary lp-btn-lg">Start free trial</Link>
+                <Link href="/login" className="lp-btn lp-btn-outline lp-btn-lg">Sign in</Link>
+              </>
+            )}
           </div>
 
           <div className="lp-frame-wrap lp-reveal">
@@ -127,7 +144,7 @@ export default function LandingPage() {
               <div className="lp-section-label">Everything included</div>
               <h2 className="lp-section-title">Six modules. One coherent system.</h2>
               <p className="lp-section-sub">
-                Not a framework — a working CRM. Every feature is already built, wired together, and ready to customise.
+                Every tool your team needs to manage WhatsApp sales — built in, wired together, and ready on day one.
               </p>
             </div>
             <div className="lp-features-grid lp-reveal">
@@ -147,10 +164,10 @@ export default function LandingPage() {
         <section id="how" className="lp-section lp-section--alt">
           <div className="lp-how-inner">
             <div className="lp-reveal">
-              <div className="lp-section-label">Self-host in an afternoon</div>
+              <div className="lp-section-label">Get started in minutes</div>
               <h2 className="lp-section-title">Up and running<br />before lunch.</h2>
               <p className="lp-section-sub lp-section-sub--spaced">
-                No DevOps ceremony. Clone, configure, deploy. The template handles the rest.
+                No engineers needed. Sign up, connect WhatsApp Business, and your team is live.
               </p>
               <div className="lp-steps">
                 {STEPS.map((s, i) => (
@@ -164,30 +181,27 @@ export default function LandingPage() {
                 ))}
               </div>
             </div>
-            <div className="lp-terminal lp-reveal" id="self-host">
+            <div className="lp-terminal lp-reveal" id="pricing">
               <div className="lp-terminal-bar">
                 <span className="lp-dot lp-dot-r" />
                 <span className="lp-dot lp-dot-y" />
                 <span className="lp-dot lp-dot-g" />
-                <span className="lp-terminal-bar-label">bash — setup</span>
+                <span className="lp-terminal-bar-label">WaCRM — onboarding</span>
               </div>
               <div className="lp-terminal-body">
-                <p><span className="t-comment"># 1. Clone</span></p>
-                <p><span className="t-prompt">$ </span><span className="t-cmd">git clone</span> <span className="t-str">https://github.com/ArnasDon/wacrm</span></p>
-                <p><span className="t-prompt">$ </span><span className="t-cmd">cd</span> wacrm <span className="t-cmd">&amp;&amp; npm install</span></p>
+                <p><span className="t-comment"># Step 1 — Create your account</span></p>
+                <p><span className="t-ok">✓ Sign up with your work email</span></p>
+                <p><span className="t-ok">✓ Invite your team members</span></p>
                 <br />
-                <p><span className="t-comment"># 2. Configure</span></p>
-                <p><span className="t-prompt">$ </span><span className="t-cmd">cp</span> .env.example .env.local</p>
-                <p><span className="t-key">NEXT_PUBLIC_SUPABASE_URL</span>=<span className="t-val">&quot;https://xyz.supabase.co&quot;</span></p>
-                <p><span className="t-key">NEXT_PUBLIC_SUPABASE_ANON_KEY</span>=<span className="t-val">&quot;eyJ...&quot;</span></p>
-                <p><span className="t-key">WHATSAPP_PHONE_ID</span>=<span className="t-val">&quot;1234567890&quot;</span></p>
-                <p><span className="t-key">WHATSAPP_TOKEN</span>=<span className="t-val">&quot;EAAx...&quot;</span></p>
+                <p><span className="t-comment"># Step 2 — Connect WhatsApp Business</span></p>
+                <p><span className="t-ok">✓ Paste your Meta Cloud API credentials</span></p>
+                <p><span className="t-ok">✓ Webhook configured automatically</span></p>
                 <br />
-                <p><span className="t-comment"># 3. Run migrations &amp; start</span></p>
-                <p><span className="t-prompt">$ </span><span className="t-cmd">npx supabase db push</span></p>
-                <p><span className="t-prompt">$ </span><span className="t-cmd">npm run dev</span></p>
+                <p><span className="t-comment"># Step 3 — Start selling</span></p>
+                <p><span className="t-ok">✓ Shared inbox live</span></p>
+                <p><span className="t-ok">✓ Pipelines &amp; contacts ready</span></p>
                 <br />
-                <p><span className="t-ok">✓ Ready on http://localhost:3000</span></p>
+                <p><span className="t-ok">✓ Your team is live in under an hour</span></p>
               </div>
             </div>
           </div>
@@ -197,10 +211,10 @@ export default function LandingPage() {
         <section className="lp-section lp-section--center">
           <div className="lp-container">
             <div className="lp-reveal">
-              <div className="lp-section-label lp-section-label--center">Why self-host</div>
-              <h2 className="lp-section-title">Your data. Your rules.<br />No bill shock.</h2>
+              <div className="lp-section-label lp-section-label--center">Built for revenue teams</div>
+              <h2 className="lp-section-title">Everything your team needs.<br />Nothing they don&apos;t.</h2>
               <p className="lp-section-sub lp-section-sub--center">
-                SaaS CRMs charge per seat, per message, per feature. With WaCRM you pay only for infrastructure you control.
+                WaCRM is purpose-built for WhatsApp sales. No bloated feature sets, no complex onboarding — just a CRM that works.
               </p>
             </div>
             <div className="lp-metrics-grid lp-reveal">
@@ -219,15 +233,13 @@ export default function LandingPage() {
           <div className="lp-container">
             <div className="lp-cta-box lp-reveal">
               <div className="lp-cta-glow" aria-hidden="true" />
-              <h2 className="lp-cta-title">Ready to own your customer conversations?</h2>
+              <h2 className="lp-cta-title">Start closing more deals on WhatsApp today.</h2>
               <p className="lp-cta-sub">
-                Fork the repo, deploy in an hour, and start building the CRM that actually fits your team.
+                14 days free. No credit card required. Your whole team up and running in under an hour.
               </p>
               <div className="lp-cta-actions">
-                <a href="https://github.com/ArnasDon/wacrm" className="lp-btn lp-btn-primary lp-btn-lg">
-                  <GithubIcon /> View on GitHub
-                </a>
-                <Link href="/signup" className="lp-btn lp-btn-outline lp-btn-lg">Try the live demo</Link>
+                <Link href="/signup" className="lp-btn lp-btn-primary lp-btn-lg">Start free trial</Link>
+                <Link href="/login" className="lp-btn lp-btn-outline lp-btn-lg">Sign in</Link>
               </div>
             </div>
           </div>
@@ -236,11 +248,12 @@ export default function LandingPage() {
 
       <footer className="lp-footer">
         <div className="lp-footer-inner">
-          <p className="lp-footer-copy">© 2025 WaCRM · MIT License · Built with Next.js &amp; Supabase</p>
+          <p className="lp-footer-copy">© 2026 WaCRM · All rights reserved</p>
           <div className="lp-footer-links">
-            <a href="https://github.com/ArnasDon/wacrm" className="lp-footer-link">GitHub</a>
-            <a href="https://github.com/ArnasDon/wacrm/issues" className="lp-footer-link">Issues</a>
+            <a href="#features" className="lp-footer-link">Features</a>
+            <a href="#pricing" className="lp-footer-link">Pricing</a>
             <Link href="/login" className="lp-footer-link">Sign in</Link>
+            <Link href="/signup" className="lp-footer-link">Get started</Link>
           </div>
         </div>
       </footer>
@@ -322,9 +335,7 @@ function ChatPane() {
 const S = { width: 15, height: 15, fill: "none" as const, stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
 const F = { width: 20, height: 20, fill: "none" as const, stroke: "#9d5ffa", strokeWidth: 2, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
 
-function GithubIcon() {
-  return <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>;
-}
+
 function CheckIcon() {
   return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9d5ffa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lp-check-icon"><polyline points="20 6 9 17 4 12"/></svg>;
 }
@@ -345,9 +356,9 @@ function FeatGridIcon()      { return <svg viewBox="0 0 24 24" {...F}><rect x="3
 /* ─── Data ───────────────────────────────────────────────────── */
 
 const PROOF: [string, string][] = [
-  ["Next.js 15", "+ Supabase"],
-  ["MIT licensed", "— fork freely"],
-  ["Deploy on", "Vercel in minutes"],
+  ["14-day", "free trial, no card needed"],
+  ["Setup in", "under an hour"],
+  ["Unlimited", "team members"],
   ["Works with", "Meta Cloud API"],
 ];
 
@@ -369,15 +380,15 @@ const FEATURES = [
 ];
 
 const STEPS = [
-  { title: "Fork and clone",         desc: "Clone the repo and install dependencies. Everything is a standard Next.js project — no proprietary tooling required." },
-  { title: "Connect Supabase",       desc: 'Create a free Supabase project, copy the API keys into <code class="lp-step-desc code">.env.local</code>, and run the migration. Schema ships with the repo.' },
-  { title: "Wire WhatsApp Business", desc: "Paste your Meta Cloud API credentials and webhook URL. The app validates the connection and starts receiving messages immediately." },
-  { title: "Deploy to Vercel",       desc: "Push to GitHub and connect the repo in Vercel. One click. Your team can start using it within the hour." },
+  { title: "Create your account",      desc: "Sign up with your work email. Invite teammates and set roles — admin, agent, or viewer. No IT department required." },
+  { title: "Connect WhatsApp Business", desc: "Paste your Meta Cloud API credentials. WaCRM auto-configures the webhook and validates the connection in seconds." },
+  { title: "Import your contacts",     desc: "Upload a CSV or let contacts flow in automatically as your first messages arrive. Tags and custom fields are ready out of the box." },
+  { title: "Start selling",            desc: "Assign conversations to agents, move deals through your pipeline, and send your first broadcast — all before lunch." },
 ];
 
 const METRICS = [
-  { value: "$0",   label: "Licensing cost — forever, MIT"           },
   { value: "6+",   label: "Built-in modules ready on day one"       },
-  { value: "∞",    label: "Team seats — no per-user pricing"        },
-  { value: "<1hr", label: "Time to deploy on Vercel + Supabase"     },
+  { value: "∞",    label: "Conversations — no per-message fees"     },
+  { value: "<1hr", label: "Average onboarding time for new teams"   },
+  { value: "14d",  label: "Free trial, no credit card needed"       },
 ];
