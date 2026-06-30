@@ -594,6 +594,68 @@
 }
 .lp-footer-link:hover { color: var(--lp-text2); }
 
+/* ─── Problem section ───────────────────────────────────────── */
+.lp-problem-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+.lp-problem-left .lp-section-title { max-width: 420px; }
+.lp-problem-right {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.lp-problem-item {
+  display: flex;
+  gap: 18px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--lp-border);
+}
+.lp-problem-item:first-child { border-top: 1px solid var(--lp-border); }
+.lp-problem-icon {
+  width: 40px; height: 40px;
+  background: rgba(248, 113, 113, 0.08);
+  border: 1px solid rgba(248, 113, 113, 0.2);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.lp-problem-title { font-size: 15px; font-weight: 650; color: var(--lp-text); margin-bottom: 6px; letter-spacing: -0.01em; }
+.lp-problem-desc  { font-size: 14px; color: var(--lp-text2); line-height: 1.6; }
+
+/* ─── Why section ────────────────────────────────────────────── */
+.lp-why-intro { margin-bottom: 56px; }
+.lp-why-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--lp-border);
+  border: 1px solid var(--lp-border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.lp-why-card {
+  background: var(--lp-bg);
+  padding: 32px 24px;
+  display: flex; flex-direction: column; gap: 12px;
+  transition: background 0.15s;
+}
+.lp-why-card:hover { background: var(--lp-bg3); }
+.lp-why-icon {
+  width: 40px; height: 40px;
+  background: rgba(52, 211, 153, 0.08);
+  border: 1px solid rgba(52, 211, 153, 0.2);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.lp-why-title { font-size: 15px; font-weight: 650; color: var(--lp-text); letter-spacing: -0.01em; }
+.lp-why-desc  { font-size: 14px; color: var(--lp-text2); line-height: 1.6; }
+
 /* ─── Scroll reveal ─────────────────────────────────────────── */
 .lp-reveal {
   opacity: 0;
@@ -613,6 +675,8 @@
   .lp-how-inner             { grid-template-columns: 1fr; gap: 48px; }
   .lp-metrics-grid          { grid-template-columns: 1fr 1fr; }
   .lp-nav-links             { display: none; }
+  .lp-problem-grid          { grid-template-columns: 1fr; gap: 40px; }
+  .lp-why-grid              { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 600px) {
   .lp-hero                  { padding-top: 116px !important; }
@@ -620,4 +684,5 @@
   .lp-metrics-grid          { grid-template-columns: 1fr 1fr; }
   .lp-proof                 { gap: 20px; }
   .lp-cta-box               { padding: 40px 24px; }
+  .lp-why-grid              { grid-template-columns: 1fr; }
 }

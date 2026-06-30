@@ -137,6 +137,29 @@ export default function LandingPage() {
           ))}
         </div>
 
+        {/* ── PROBLEM ── */}
+        <section className="lp-section lp-section--alt">
+          <div className="lp-container">
+            <div className="lp-problem-grid lp-reveal">
+              <div className="lp-problem-left">
+                <div className="lp-section-label">Sound familiar?</div>
+                <h2 className="lp-section-title">WhatsApp is where your customers are.<br />Your tools haven&apos;t caught up.</h2>
+              </div>
+              <div className="lp-problem-right">
+                {PROBLEMS.map((p) => (
+                  <div key={p.title} className="lp-problem-item">
+                    <div className="lp-problem-icon"><p.Icon /></div>
+                    <div>
+                      <p className="lp-problem-title">{p.title}</p>
+                      <p className="lp-problem-desc">{p.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* ── FEATURES ── */}
         <section id="features" className="lp-section">
           <div className="lp-container">
@@ -222,6 +245,28 @@ export default function LandingPage() {
                 <div key={m.label} className="lp-metric-card">
                   <div className="lp-metric-value">{m.value}</div>
                   <div className="lp-metric-label">{m.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── WHY WACRM ── */}
+        <section className="lp-section lp-section--alt">
+          <div className="lp-container">
+            <div className="lp-why-intro lp-reveal">
+              <div className="lp-section-label">Why WaCRM</div>
+              <h2 className="lp-section-title">Not just another CRM.</h2>
+              <p className="lp-section-sub">
+                Most CRMs bolt on a WhatsApp integration as an afterthought. WaCRM is designed around WhatsApp from the ground up — every feature exists to help your team respond faster, follow up consistently, and close more deals.
+              </p>
+            </div>
+            <div className="lp-why-grid lp-reveal">
+              {WHY.map((w) => (
+                <div key={w.title} className="lp-why-card">
+                  <div className="lp-why-icon"><w.Icon /></div>
+                  <p className="lp-why-title">{w.title}</p>
+                  <p className="lp-why-desc">{w.desc}</p>
                 </div>
               ))}
             </div>
@@ -353,6 +398,18 @@ function FeatBroadcastIcon() { return <svg viewBox="0 0 24 24" {...F}><path d="M
 function FeatZapIcon()       { return <svg viewBox="0 0 24 24" {...F}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>; }
 function FeatGridIcon()      { return <svg viewBox="0 0 24 24" {...F}><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>; }
 
+const P = { width: 22, height: 22, fill: "none" as const, stroke: "#f87171", strokeWidth: 1.8, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
+const W = { width: 22, height: 22, fill: "none" as const, stroke: "#34d399", strokeWidth: 1.8, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
+
+function ProbChaosIcon()  { return <svg viewBox="0 0 24 24" {...P}><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>; }
+function ProbLeakIcon()   { return <svg viewBox="0 0 24 24" {...P}><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>; }
+function ProbSlowIcon()   { return <svg viewBox="0 0 24 24" {...P}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>; }
+
+function WhySpeedIcon()   { return <svg viewBox="0 0 24 24" {...W}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>; }
+function WhyFocusIcon()   { return <svg viewBox="0 0 24 24" {...W}><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>; }
+function WhySimpleIcon()  { return <svg viewBox="0 0 24 24" {...W}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>; }
+function WhyTeamIcon()    { return <svg viewBox="0 0 24 24" {...W}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>; }
+
 /* ─── Data ───────────────────────────────────────────────────── */
 
 const PROOF: [string, string][] = [
@@ -370,13 +427,26 @@ const CONVOS = [
   { initials: "SP", bg: "#be185d", name: "Sara P.",   time: "5h",  preview: "Thanks, looking forward to it!"                     },
 ];
 
+const PROBLEMS = [
+  { Icon: ProbChaosIcon, title: "Conversations lost in personal phones", desc: "Leads message your sales reps directly. When that rep is unavailable, the lead goes cold — and you never even knew it happened." },
+  { Icon: ProbLeakIcon,  title: "No visibility into your pipeline",      desc: "You can't manage what you can't see. Without a shared system, deals slip through the cracks and follow-ups never happen." },
+  { Icon: ProbSlowIcon,  title: "Slow, inconsistent responses",          desc: "Customers expect replies within minutes on WhatsApp. A slow response is a lost sale — and there's no way to know who's falling behind." },
+];
+
+const WHY = [
+  { Icon: WhySpeedIcon,  title: "Built for speed",         desc: "Every screen is designed for fast triage. Open a conversation, reply, assign, and move on — in seconds, not minutes." },
+  { Icon: WhyFocusIcon,  title: "WhatsApp-first, not last", desc: "We didn't bolt WhatsApp onto a generic CRM. The entire product is designed around how WhatsApp conversations actually work." },
+  { Icon: WhySimpleIcon, title: "No IT project required",  desc: "Connect your WhatsApp Business account and invite your team. There's nothing to install, configure, or maintain." },
+  { Icon: WhyTeamIcon,   title: "Your whole team, one inbox", desc: "Agents see only what's assigned to them. Managers see everything. No double-replies, no missed messages, no confusion." },
+];
+
 const FEATURES = [
-  { Icon: FeatMsgIcon,       title: "Shared Inbox",    desc: "Every WhatsApp conversation in one place. Assign threads to agents, track open/closed status, and see who's handling what in real time.",                                                               tag: "Team-ready"    },
-  { Icon: FeatUsersIcon,     title: "Contacts",        desc: "A full customer database with tags, custom fields, CSV import, and smart deduplication. Every message thread links to a contact record.",                                                              tag: "CRM core"      },
-  { Icon: FeatPipelineIcon,  title: "Sales Pipelines", desc: "Kanban boards with five default stages from New Lead to Won. Drag deals, track value, and see your entire funnel at a glance.",                                                                        tag: "Deals tracking"},
-  { Icon: FeatBroadcastIcon, title: "Broadcasts",      desc: "Send approved WhatsApp templates to segmented contact lists. Per-recipient variable substitution, delivery tracking, read receipts.",                                                                  tag: "Bulk messaging"},
-  { Icon: FeatZapIcon,       title: "Automations",     desc: "No-code workflow builder. Trigger on inbound messages, keywords, new contacts, or schedules. Branch on conditions, wait, tag, webhook.",                                                              tag: "No-code"       },
-  { Icon: FeatGridIcon,      title: "Live Dashboard",  desc: "Metrics across every module: active conversations, new contacts, open deal value, response time trends, and a cross-module activity feed.",                                                            tag: "Analytics"     },
+  { Icon: FeatMsgIcon,       title: "Shared Inbox",    desc: "Stop losing leads in personal phones. Every inbound WhatsApp message lands in one shared inbox — assigned, tracked, and visible to your whole team.",           tag: "Team-ready"    },
+  { Icon: FeatUsersIcon,     title: "Contact Records", desc: "Every conversation is tied to a contact. Full history, tags, custom fields, and notes — so anyone on your team can pick up where the last person left off.",    tag: "CRM core"      },
+  { Icon: FeatPipelineIcon,  title: "Sales Pipelines", desc: "Move deals from first message to closed-won on a visual Kanban board. Track value, spot stuck deals, and know exactly where your revenue is at any moment.",    tag: "Deal tracking" },
+  { Icon: FeatBroadcastIcon, title: "Broadcasts",      desc: "Re-engage your contact list with targeted WhatsApp campaigns. Segment by tag, personalise each message, and track delivery and read receipts.",                tag: "Bulk messaging"},
+  { Icon: FeatZapIcon,       title: "Automations",     desc: "Follow up automatically when a lead goes quiet, tag contacts based on keywords, or trigger a webhook when a deal is won — all without writing a line of code.", tag: "No-code"       },
+  { Icon: FeatGridIcon,      title: "Live Dashboard",  desc: "Know your team's pulse at a glance. Open conversations, response times, new contacts, and deal value — all updating in real time.",                            tag: "Analytics"     },
 ];
 
 const STEPS = [
